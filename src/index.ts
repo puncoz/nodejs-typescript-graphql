@@ -5,7 +5,7 @@ import "reflect-metadata"
 import { createConnection } from "typeorm"
 import { resolvers } from "./resolvers"
 
-(async () => {
+export const startServer = async () => {
     const typeDefs = importSchema(join(__dirname, "./schema.graphql"))
 
     const server = new GraphQLServer({typeDefs, resolvers})
@@ -13,7 +13,10 @@ import { resolvers } from "./resolvers"
     await createConnection()
 
     const port = 4001
-    await server.start({port}, () => {
-        console.log(`Server is running on localhost: ${port}`)
-    })
+    await server.start({port})
+    console.log(`Server is running on localhost: ${port}`)
+}
+
+(async () => {
+    await startServer()
 })()
