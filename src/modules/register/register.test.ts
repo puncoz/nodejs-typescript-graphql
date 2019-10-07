@@ -2,9 +2,13 @@ import { request } from "graphql-request"
 import { Server } from "http"
 import { User } from "../../entity/User"
 import { startServer } from "../../startServer"
+import { duplicateEmail, emailNotLongEnough, invalidEmail, passwordNotLongEnough } from "./errorMessages"
 
 let getHost = () => ""
 let server: Server
+
+const testEmail = "hello@world.com"
+const testPassword = "secret"
 
 beforeAll(async () => {
     server = await startServer(({port}: any) => {
@@ -16,10 +20,7 @@ afterAll(async () => {
     server.close()
 })
 
-const email = "hello@world.com"
-const password = "secret"
-
-const mutation = `
+const mutation = (email: string, password: string) => `
 mutation {
     register(email: "${email}", password: "${password}") {
         path
@@ -28,20 +29,71 @@ mutation {
 }
 `
 
-test("Register user", async (done) => {
-    const successResponse = await request(getHost(), mutation)
+test("Invalid Email", async () => {
+    const response = await request(getHost(), mutation("test", testPassword))
+    expect(response).toEqual({
+        register: [
+            {
+                path: "email",
+                message: emailNotLongEnough
+            },
+            {
+                path: "email",
+                message: invalidEmail
+            }
+        ]
+    })
+})
+
+test("Invalid Password", async () => {
+    const response = await request(getHost(), mutation(testEmail, "123"))
+    expect(response).toEqual({
+        register: [
+            {
+                path: "password",
+                message: passwordNotLongEnough
+            }
+        ]
+    })
+})
+
+test("Invalid Email and Password", async () => {
+    const response = await request(getHost(), mutation("test", "123"))
+    expect(response).toEqual({
+        register: [
+            {
+                path: "email",
+                message: emailNotLongEnough
+            },
+            {
+                path: "email",
+                message: invalidEmail
+            },
+            {
+                path: "password",
+                message: passwordNotLongEnough
+            }
+        ]
+    })
+})
+
+test("Successfully register a user", async () => {
+    const successResponse = await request(getHost(), mutation(testEmail, testPassword))
     expect(successResponse).toEqual({register: null})
 
-    const users = await User.find({where: {email}})
+    const users = await User.find({where: {email: testEmail}})
     expect(users).toHaveLength(1)
 
     const user = users[0]
-    expect(user.email).toEqual(email)
-    expect(user.password).not.toEqual(password)
+    expect(user.email).toEqual(testEmail)
+    expect(user.password).not.toEqual(testPassword)
+})
 
-    const failedResponse = await request(getHost(), mutation)
-    expect(failedResponse.register).toHaveLength(1)
-    expect(failedResponse.register[0].path).toEqual("email")
-
-    done()
+test("Duplicate Email", async () => {
+    const response = await request(getHost(), mutation(testEmail, testPassword))
+    expect(response.register).toHaveLength(1)
+    expect(response.register[0]).toEqual({
+        path: "email",
+        message: duplicateEmail
+    })
 })
