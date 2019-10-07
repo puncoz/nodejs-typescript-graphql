@@ -21,13 +21,16 @@ const password = "secret"
 
 const mutation = `
 mutation {
-    register(email: "${email}", password: "${password}")
+    register(email: "${email}", password: "${password}") {
+        path
+        message
+    }
 }
 `
 
 test("Register user", async (done) => {
-    const response = await request(getHost(), mutation)
-    expect(response).toEqual({register: true})
+    const successResponse = await request(getHost(), mutation)
+    expect(successResponse).toEqual({register: null})
 
     const users = await User.find({where: {email}})
     expect(users).toHaveLength(1)
@@ -35,6 +38,10 @@ test("Register user", async (done) => {
     const user = users[0]
     expect(user.email).toEqual(email)
     expect(user.password).not.toEqual(password)
+
+    const failedResponse = await request(getHost(), mutation)
+    expect(failedResponse.register).toHaveLength(1)
+    expect(failedResponse.register[0].path).toEqual("email")
 
     done()
 })
