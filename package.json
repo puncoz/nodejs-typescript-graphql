@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "Node.js app in Typescript implementing GraphQL",
   "scripts": {
-    "test": "jest",
-    "start": "nodemon --exec ts-node --files src/index.ts",
+    "test": "NODE_ENV=test jest",
+    "start": "NODE_ENV=development nodemon --exec ts-node --files src/index.ts",
+    "start:test": "NODE_ENV=test ts-node --files src/index.ts",
     "gen-schema-types": "gql2ts src/schema.graphql -o src/types/schema.d.ts"
   },
   "repository": {
