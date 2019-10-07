@@ -1,7 +1,7 @@
 import { request } from "graphql-request"
 import { Server } from "http"
-import { User } from "../entity/User"
-import { startServer } from "../startServer"
+import { User } from "../../entity/User"
+import { startServer } from "../../startServer"
 
 let getHost = () => ""
 let server: Server
