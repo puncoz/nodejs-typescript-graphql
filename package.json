@@ -7,7 +7,7 @@
     "test:watch": "yarn test --watch",
     "start": "NODE_ENV=development nodemon --exec ts-node --files src/index.ts",
     "start:test": "NODE_ENV=test ts-node --files src/index.ts",
-    "gen-schema-types": "gql2ts src/schema.graphql -o src/types/schema.d.ts",
+    "gen-schema-types": "ts-node --files ./src/scripts/generateSchemaTypes.ts",
     "ci": "start-server-and-test start:test http://localhost:4001 test"
   },
   "repository": {
@@ -29,6 +29,7 @@
   "homepage": "https://github.com/puncoz/nodejs-typescript-graphql#readme",
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
+    "@types/express": "^4.17.1",
     "@types/ioredis": "^4.0.18",
     "@types/jest": "^24.0.18",
     "@types/node": "^12.7.11",
@@ -47,7 +48,9 @@
     "typescript": "^3.6.3"
   },
   "dependencies": {
+    "@gql2ts/from-schema": "^1.10.1",
     "bcryptjs": "^2.4.3",
+    "express": "^4.17.1",
     "graphql": "^14.5.8",
     "graphql-import": "^0.7.1",
     "graphql-request": "^1.8.2",
