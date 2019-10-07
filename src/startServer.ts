@@ -3,7 +3,9 @@ import { GraphQLSchema } from "graphql"
 import { importSchema } from "graphql-import"
 import { makeExecutableSchema, mergeSchemas } from "graphql-tools"
 import { GraphQLServer } from "graphql-yoga"
+import * as Redis from "ioredis"
 import { join } from "path"
+import { User } from "./entity/User"
 import { createTypeOrmConnection } from "./utils/createTypeOrmConnection"
 
 export const startServer = async (callback: any) => {
@@ -15,7 +17,26 @@ export const startServer = async (callback: any) => {
         schemas.push(makeExecutableSchema({resolvers, typeDefs}))
     })
 
-    const server = new GraphQLServer({schema: mergeSchemas({schemas})})
+    const redis = new Redis()
+
+    const server = new GraphQLServer({
+        schema: mergeSchemas({schemas}),
+        context: ({request}) => ({
+            redis,
+            url: `${request.protocol}://${request.get("host")}`
+        })
+    })
+
+    server.express.get("/confirm/:token", async (req, res) => {
+        const {token} = req.params
+        const userId: any = await redis.get(token)
+        if(userId) {
+            await User.update({id: userId}, {verified: true})
+            res.send("ok")
+        } else {
+            res.send("invalid.")
+        }
+    })
 
     await createTypeOrmConnection()
 

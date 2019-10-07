@@ -28,6 +28,7 @@
   "homepage": "https://github.com/puncoz/nodejs-typescript-graphql#readme",
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
+    "@types/ioredis": "^4.0.18",
     "@types/jest": "^24.0.18",
     "@types/node": "^12.7.11",
     "@types/uuid": "^3.4.5",
@@ -50,9 +51,11 @@
     "graphql-request": "^1.8.2",
     "graphql-tools": "^4.0.5",
     "graphql-yoga": "^1.18.3",
+    "ioredis": "^4.14.1",
     "pg": "^7.12.1",
     "reflect-metadata": "^0.1.13",
     "typeorm": "^0.2.19",
+    "uuid": "^3.3.3",
     "yup": "^0.27.0"
   }
 }
