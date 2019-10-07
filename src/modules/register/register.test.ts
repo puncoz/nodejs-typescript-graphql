@@ -1,24 +1,12 @@
 import { request } from "graphql-request"
-import { Server } from "http"
 import { User } from "../../entity/User"
-import { startServer } from "../../startServer"
+import { createTypeOrmConnection } from "../../utils/createTypeOrmConnection"
 import { duplicateEmail, emailNotLongEnough, invalidEmail, passwordNotLongEnough } from "./errorMessages"
 
-let getHost = () => ""
-let server: Server
+const getHost = (): string => process.env.TEST_HOST as string
 
 const testEmail = "hello@world.com"
 const testPassword = "secret"
-
-beforeAll(async () => {
-    server = await startServer(({port}: any) => {
-        getHost = () => `http://localhost:${port}`
-    })
-})
-
-afterAll(async () => {
-    server.close()
-})
 
 const mutation = (email: string, password: string) => `
 mutation {
@@ -28,6 +16,10 @@ mutation {
     }
 }
 `
+
+beforeAll(async () => {
+    await createTypeOrmConnection()
+})
 
 describe("User Registration", () => {
     test("Invalid Email", async () => {

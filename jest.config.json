@@ -1,0 +1,5 @@
+{
+  "preset":          "ts-jest",
+  "testEnvironment": "node",
+  "globalSetup":     "./src/testSetup/setup.ts"
+}
