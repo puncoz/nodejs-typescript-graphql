@@ -30,11 +30,12 @@ export const startServer = async (callback: any) => {
     server.express.get("/confirm/:token", async (req, res) => {
         const {token} = req.params
         const userId: any = await redis.get(token)
-        if(userId) {
+        if (userId) {
             await User.update({id: userId}, {verified: true})
+            await redis.del(token)
             res.send("ok")
         } else {
-            res.send("invalid.")
+            res.send("invalid")
         }
     })
 

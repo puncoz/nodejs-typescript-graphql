@@ -4,6 +4,7 @@
   "description": "Node.js app in Typescript implementing GraphQL",
   "scripts": {
     "test": "NODE_ENV=test jest --detectOpenHandles --forceExit --config jest.config.json",
+    "test:watch": "yarn test --watch",
     "start": "NODE_ENV=development nodemon --exec ts-node --files src/index.ts",
     "start:test": "NODE_ENV=test ts-node --files src/index.ts",
     "gen-schema-types": "gql2ts src/schema.graphql -o src/types/schema.d.ts",
@@ -31,6 +32,7 @@
     "@types/ioredis": "^4.0.18",
     "@types/jest": "^24.0.18",
     "@types/node": "^12.7.11",
+    "@types/node-fetch": "^2.5.2",
     "@types/uuid": "^3.4.5",
     "@types/yup": "^0.26.24",
     "gql2ts": "^1.10.1",
@@ -52,6 +54,7 @@
     "graphql-tools": "^4.0.5",
     "graphql-yoga": "^1.18.3",
     "ioredis": "^4.14.1",
+    "node-fetch": "^2.6.0",
     "pg": "^7.12.1",
     "reflect-metadata": "^0.1.13",
     "typeorm": "^0.2.19",
