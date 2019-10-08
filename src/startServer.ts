@@ -21,10 +21,10 @@ export const startServer = async (callback: any) => {
     })
 
     server.express.use(session({
-        name: "qid",
         store: new RedisStore({
             client: redis as any
         }),
+        name: "qid",
         secret: "some-secret",
         resave: false,
         saveUninitialized: false,

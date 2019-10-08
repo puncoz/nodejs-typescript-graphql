@@ -1,13 +1,13 @@
 import { Resolver } from "../../types/graphql-utils"
+import { logger } from "../../utils/logger"
 
-export default async (
-    resolver: Resolver,
-    parent: any,
-    args: any,
-    context: any,
-    info: any) => {
-    const result = await resolver(parent, args, context, info)
-    // afterware
-    console.log(result,"middlware")
-    return result
+export default async (resolver: Resolver, ...params: any[]) => {
+    const [parent, args, context, info] = params
+    logger(context.session)
+
+    if (!context.session || !context.session.userId) {
+        throw new Error("unauthenticated")
+    }
+
+    return resolver(parent, args, context, info)
 }

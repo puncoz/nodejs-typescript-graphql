@@ -58,8 +58,6 @@ beforeAll(async () => {
 
     await axios.post(getHost(), {
         query: registerMutation(testEmail, testPassword)
-    }, {
-        withCredentials: true
     })
 
     user = await User.findOne({where: {email: testEmail}}) as User
@@ -71,9 +69,10 @@ afterAll(async () => {
 })
 
 describe("User Profile", () => {
-    // it("should not get my profile if not logged-in", async (done) => {
-    //     done()
-    // })
+    it("should be null for not logged-in user", async () => {
+        const response = await getProfile()
+        expect(response.data.data.me).toBeNull()
+    })
 
     it("should get profile for logged-in user", async () => {
         await login(testEmail, testPassword)
