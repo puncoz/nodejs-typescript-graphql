@@ -4,7 +4,7 @@ import { User } from "../../entity/User"
 import { ResolverMap } from "../../types/graphql-utils"
 import { createConfirmEmailLink } from "../../utils/createConfirmEmailLink"
 import { formatYupErrors } from "../../utils/formatYupErrors"
-import { sendEmail } from "../../utils/sendEmail"
+// import { sendEmail } from "../../utils/sendEmail"
 import { duplicateEmail, emailNotLongEnough, invalidEmail, passwordNotLongEnough } from "./errorMessages"
 
 const schema = yup.object({
@@ -41,9 +41,10 @@ export const resolvers: ResolverMap = {
             await user.save()
 
             const link = await createConfirmEmailLink(url, user.id, redis)
-            if (process.env.NODE_ENV !== "test") {
-                await sendEmail(email, link)
-            }
+            console.log(link)
+            // if (process.env.NODE_ENV !== "test") {
+            //     await sendEmail(email, link)
+            // }
 
             return null
         }
