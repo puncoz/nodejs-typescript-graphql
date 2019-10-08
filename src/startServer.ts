@@ -1,12 +1,14 @@
-import * as connecRedis from "connect-redis"
+import * as connectRedis from "connect-redis"
+import "dotenv/config"
 import * as session from "express-session"
 import { GraphQLServer } from "graphql-yoga"
+import "reflect-metadata"
 import { redis } from "./redis"
 import { confirmEmail } from "./routes/confirmEmail"
 import { createTypeOrmConnection } from "./utils/createTypeOrmConnection"
 import { stitchesSchema } from "./utils/stitchesSchema"
 
-const RedisStore = connecRedis(session)
+const RedisStore = connectRedis(session)
 
 export const startServer = async (callback: any) => {
     const server = new GraphQLServer({

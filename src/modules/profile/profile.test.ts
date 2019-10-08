@@ -76,7 +76,7 @@ describe("User Profile", () => {
     // })
 
     it("should get profile for logged-in user", async () => {
-        await login(user.email, testPassword)
+        await login(testEmail, testPassword)
 
         const response = await getProfile()
         expect(response.data.data).toEqual({

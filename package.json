@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Node.js app in Typescript implementing GraphQL",
   "scripts": {
-    "test": "NODE_ENV=test jest --detectOpenHandles --forceExit --config jest.config.json",
+    "test": "NODE_ENV=test jest --detectOpenHandles --forceExit --runInBand --config jest.config.json",
     "test:watch": "yarn test --watch",
     "start": "NODE_ENV=development nodemon --exec ts-node --files src/index.ts",
     "start:test": "NODE_ENV=test ts-node --files src/index.ts",
