@@ -19,7 +19,7 @@ export const startServer = async (callback: any) => {
     })
 
     server.express.use(session({
-        name: "session",
+        name: "qid",
         store: new RedisStore({
             client: redis as any
         }),
@@ -39,7 +39,7 @@ export const startServer = async (callback: any) => {
 
     const cors = {
         credentials: true,
-        origin: "http://localhost:3000"
+        origin: process.env.NODE_ENV === "test" ? "*" : (process.env.FRONTEND_URL as string)
     }
     const port = process.env.NODE_ENV === "test" ? 0 : 4001
     return server.start({cors, port}, callback)

@@ -17,7 +17,6 @@ export const resolvers: ResolverMap = {
             }
 
             const passwordMatched = await compare(password, user.password)
-            console.log(email, password, passwordMatched ? "true" : "false")
             if (!passwordMatched) {
                 return errorResponse
             }

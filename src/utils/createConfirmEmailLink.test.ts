@@ -1,13 +1,12 @@
-import * as Redis from "ioredis"
 import fetch from "node-fetch"
 import { Connection } from "typeorm"
 import { User } from "../entity/User"
+import { redis } from "../redis"
 import { createConfirmEmailLink } from "./createConfirmEmailLink"
 import { createTypeOrmConnection } from "./createTypeOrmConnection"
 
 let userId: string
 let dbConnection: Connection
-const redis = new Redis()
 
 beforeAll(async () => {
     dbConnection = await createTypeOrmConnection()

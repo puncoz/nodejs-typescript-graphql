@@ -1,10 +1,12 @@
 import { request } from "graphql-request"
+import { Connection } from "typeorm"
 import { User } from "../../entity/User"
 import { createTypeOrmConnection } from "../../utils/createTypeOrmConnection"
 import { invalidLogin, notVerified } from "./errorMessages"
 
 const getHost = (): string => process.env.TEST_HOST as string
 
+let dbConnection: Connection
 const testEmail = "login@test.com"
 const testPassword = "secret"
 
@@ -43,9 +45,13 @@ const expectFailedLogin = async (email: string, password: string, errorMessage: 
 }
 
 beforeAll(async () => {
-    await createTypeOrmConnection()
+    dbConnection = await createTypeOrmConnection()
 
     await request(getHost(), registerMutation(testEmail, testPassword))
+})
+
+afterAll(async () => {
+    await dbConnection.close()
 })
 
 describe("User Login", () => {

@@ -1,10 +1,12 @@
 import { request } from "graphql-request"
+import { Connection } from "typeorm"
 import { User } from "../../entity/User"
 import { createTypeOrmConnection } from "../../utils/createTypeOrmConnection"
 import { duplicateEmail, emailNotLongEnough, invalidEmail, passwordNotLongEnough } from "./errorMessages"
 
 const getHost = (): string => process.env.TEST_HOST as string
 
+let dbConnection: Connection
 const testEmail = "hello@world.com"
 const testPassword = "secret"
 
@@ -18,7 +20,11 @@ mutation {
 `
 
 beforeAll(async () => {
-    await createTypeOrmConnection()
+    dbConnection = await createTypeOrmConnection()
+})
+
+afterAll(async () => {
+    await dbConnection.close()
 })
 
 describe("User Registration", () => {
