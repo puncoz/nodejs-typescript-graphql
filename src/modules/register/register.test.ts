@@ -1,7 +1,7 @@
-import { request } from "graphql-request"
 import { Connection } from "typeorm"
 import { User } from "../../entity/User"
 import { createTypeOrmConnection } from "../../utils/createTypeOrmConnection"
+import { TestClientService } from "../../utils/testClientService"
 import { duplicateEmail, emailNotLongEnough, invalidEmail, passwordNotLongEnough } from "./errorMessages"
 
 const getHost = (): string => process.env.TEST_HOST as string
@@ -9,15 +9,7 @@ const getHost = (): string => process.env.TEST_HOST as string
 let dbConnection: Connection
 const testEmail = "hello@world.com"
 const testPassword = "secret"
-
-const mutation = (email: string, password: string) => `
-mutation {
-    register(email: "${email}", password: "${password}") {
-        path
-        message
-    }
-}
-`
+const client: TestClientService = new TestClientService(getHost())
 
 beforeAll(async () => {
     dbConnection = await createTypeOrmConnection()
@@ -29,7 +21,7 @@ afterAll(async () => {
 
 describe("User Registration", () => {
     test("Invalid Email", async () => {
-        const response = await request(getHost(), mutation("test", testPassword))
+        const response = await client.register("test", testPassword)
         expect(response).toEqual({
             register: [
                 {
@@ -45,7 +37,7 @@ describe("User Registration", () => {
     })
 
     test("Invalid Password", async () => {
-        const response = await request(getHost(), mutation(testEmail, "123"))
+        const response = await client.register(testEmail, "123")
         expect(response).toEqual({
             register: [
                 {
@@ -57,7 +49,7 @@ describe("User Registration", () => {
     })
 
     test("Invalid Email and Password", async () => {
-        const response = await request(getHost(), mutation("test", "123"))
+        const response = await client.register("test", "123")
         expect(response).toEqual({
             register: [
                 {
@@ -77,8 +69,8 @@ describe("User Registration", () => {
     })
 
     test("Registration success", async () => {
-        const successResponse = await request(getHost(), mutation(testEmail, testPassword))
-        expect(successResponse).toEqual({register: null})
+        const response = await client.register(testEmail, testPassword)
+        expect(response).toEqual({register: null})
 
         const users = await User.find({where: {email: testEmail}})
         expect(users).toHaveLength(1)
@@ -89,7 +81,7 @@ describe("User Registration", () => {
     })
 
     test("Duplicate Email", async () => {
-        const response = await request(getHost(), mutation(testEmail, testPassword))
+        const response = await client.register(testEmail, testPassword)
         expect(response.register).toHaveLength(1)
         expect(response.register[0]).toEqual({
             path: "email",
