@@ -69,6 +69,21 @@ export class TestClientService {
         return data
     }
 
+    async logoutFromAll() {
+        const {data} = await rp.post(this.url, {
+            ...this.options,
+            body: {
+                query: `
+                mutation {
+                    logoutFromAll
+                }
+                `
+            }
+        })
+
+        return data
+    }
+
     async myProfile() {
         const {data} = await rp.post(this.url, {
             ...this.options,

@@ -9,9 +9,8 @@ let dbConnection: Connection
 const testEmail = "my-profile@test.com"
 const testPassword = "secret"
 let user: User
-const client: TestClientService = new TestClientService(getHost())
 
-const expectProfile = async (expected?: object) => {
+const expectProfile = async (client: TestClientService, expected?: object) => {
     const response = await client.myProfile()
     expect(response).toEqual(expected)
 }
@@ -19,6 +18,7 @@ const expectProfile = async (expected?: object) => {
 beforeAll(async () => {
     dbConnection = await createTypeOrmConnection()
 
+    const client = new TestClientService(getHost())
     await client.register(testEmail, testPassword)
 
     user = await User.findOne({where: {email: testEmail}}) as User
@@ -30,20 +30,40 @@ afterAll(async () => {
 })
 
 describe("Logout", () => {
-    it("should clear session", async (done) => {
-        await client.login(testEmail, testPassword)
-        await expectProfile({
+    test("single session", async (done) => {
+        const client1 = new TestClientService(getHost())
+        const client2 = new TestClientService(getHost())
+
+        await client1.login(testEmail, testPassword)
+        await client2.login(testEmail, testPassword)
+        await expectProfile(client1, {
             me: {
                 id: user.id,
                 email: user.email
             }
         })
+        expect(await client1.myProfile()).toEqual(await client2.myProfile())
 
-        await client.logout()
-        await expectProfile({
+        await client1.logout()
+        await expectProfile(client1, {
             me: null
         })
+        expect(await client1.myProfile()).not.toEqual(await client2.myProfile())
 
+        done()
+    })
+
+
+    test("multiple session", async (done) => {
+        const client1 = new TestClientService(getHost())
+        const client2 = new TestClientService(getHost())
+
+        await client1.login(testEmail, testPassword)
+        await client2.login(testEmail, testPassword)
+        expect(await client1.myProfile()).toEqual(await client2.myProfile())
+
+        await client1.logoutFromAll()
+        expect(await client1.myProfile()).toEqual(await client2.myProfile())
         done()
     })
 })
