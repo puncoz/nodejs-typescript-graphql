@@ -65,7 +65,7 @@
     "graphql-tools": "^4.0.5",
     "graphql-yoga": "^1.18.3",
     "ioredis": "^4.14.1",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "pg": "^7.12.1",
     "reflect-metadata": "^0.1.13",
     "request-promise": "^4.2.4",
